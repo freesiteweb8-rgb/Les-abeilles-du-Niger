@@ -1,0 +1,4 @@
+abeilles.db
+*.db
+__pycache__/
+instance/
